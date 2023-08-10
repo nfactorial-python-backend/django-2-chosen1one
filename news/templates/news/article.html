@@ -1,0 +1,23 @@
+<body>
+    <h2>{{ article.title }}</h2>
+    <h4>{{ article.content }}<h4>
+
+    <div>
+        <p>Comments:</p>
+        <ul>
+        {% for comment in comments %}
+            <li>
+                {{ comment.content }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <form action="{% url 'news:article' article.id %}" method="post">
+        {% csrf_token %}
+        Content: <input type="text" name="content"> <br>
+        <input type="submit" value="Add comment">
+    </form>
+
+    <a href="{% url 'news:index' %}">News</a>
+</body>

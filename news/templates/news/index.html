@@ -1,0 +1,19 @@
+<body>
+    <h3>News:</h3>
+    <ol>
+    {% for article in articles %}
+        <li>
+            <a href="{% url 'news:article' article.id %}">
+                {{ article.title }}
+            </a>
+        </li>
+    {% endfor %}
+    </ol>
+
+    <form action="{% url 'news:index' %}" method="post">
+        {% csrf_token %}
+        Title: <input type="text" name="title"> <br>
+        Content: <input type="text" name="content"> <br>
+        <input type="submit" value="Add news">
+    </form>
+</body>
