@@ -7,8 +7,7 @@ def index(request):
         article = News(title=request.POST["title"], content=request.POST["content"])
         article.save()
         return redirect("news:article", article_id=article.id)
-    
-    articles = get_list_or_404(News.objects.order_by("-created_at"))
+    articles = News.objects.order_by("-created_at")
     context = {"articles": articles}
     return render(request, "news/index.html", context)
 
@@ -19,7 +18,7 @@ def article(request, article_id):
         comment.save()
         return redirect("news:article", article_id=article.id)
 
-    comments = article.comment_set.all()
+    comments = article.comment_set.all().order_by("-created_at")
     context = {
         "article": article,
         "comments": comments,
