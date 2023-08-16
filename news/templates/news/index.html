@@ -1,10 +1,14 @@
-<body>
-    <h3>News:</h3>
+{% extends "news/base.html" %}
+
+{% block content %}
     <ol>
     {% for article in articles %}
         <li>
             <a href="{% url 'news:article' article.id %}">
                 {{ article.title }}
+                <a href="{{article.id}}/edit">
+                    Edit
+                </a>
             </a>
         </li>
     {% endfor %}
@@ -12,8 +16,12 @@
 
     <form action="{% url 'news:index' %}" method="post">
         {% csrf_token %}
+        
+        {{ form }}
+        <!--
         Title: <input type="text" name="title"> <br>
         Content: <input type="text" name="content"> <br>
+        -->
         <input type="submit" value="Add news">
     </form>
-</body>
+{% endblock %}

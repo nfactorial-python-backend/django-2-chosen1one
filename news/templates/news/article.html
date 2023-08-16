@@ -1,4 +1,8 @@
-<body>
+{% extends "news/base.html" %}
+
+{% block title %} Article {% endblock %}
+
+{% block content %}
     <h2>{{ article.title }}</h2>
     <h4>{{ article.content }}<h4>
 
@@ -15,9 +19,10 @@
 
     <form action="{% url 'news:article' article.id %}" method="post">
         {% csrf_token %}
+        
         Content: <input type="text" name="content"> <br>
         <input type="submit" value="Add comment">
     </form>
 
     <a href="{% url 'news:index' %}">News</a>
-</body>
+{% endblock %}
