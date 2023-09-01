@@ -1,0 +1,16 @@
+{% extends "news/base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <form action="/login/" method="post">
+        {% csrf_token %}
+
+        {{ form }}
+        <p><input type="submit" value="Login"</p>
+
+        <p>
+            <a href="/news/sign-up/">Create account</a>
+        </p>
+    </form>
+{% endblock %}

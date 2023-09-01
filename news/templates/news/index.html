@@ -6,9 +6,15 @@
         <li>
             <a href="{% url 'news:article' article.id %}">
                 {{ article.title }}
-                <a href="{{article.id}}/edit">
-                    Edit
-                </a>
+                {% if user == article.author or perms.news.delete_news %}
+                    <a href="{{article.id}}/edit">
+                        Edit
+                    </a>
+                    <form action="{{article.id}}/delete" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                {% endif %}
             </a>
         </li>
     {% endfor %}
@@ -24,4 +30,17 @@
         -->
         <input type="submit" value="Add news">
     </form>
+    <br><br>
+
+    {% if user.is_authenticated %}
+    <li>
+        {{ user.username }} <br>
+        <a href="/logout">Logout</a><br><br>    
+    </li>
+    {% else %}
+    <li>
+        <a href="/login">Log In</a><br><br>
+    </li>
+    {% endif %}
+    <a href="news/sign-up">Sign Up</a>
 {% endblock %}

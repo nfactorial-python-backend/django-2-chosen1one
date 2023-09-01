@@ -1,16 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views import View
+from django.contrib.auth import login
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required, permission_required
 
 from .models import News, Comment
-from .forms import ArticleForm
+from .forms import ArticleForm, SignUpForm
 
+@login_required(login_url="/login/")
+@permission_required("news.add_news", login_url="/login/")
 def index(request):
     if request.POST:
         form = ArticleForm(request.POST)
         if form.is_valid():
-            article = form.save()
-        return redirect("news:article", article_id=article.id)
+            db_article = form.save(commit=False)
+            db_article.author = request.user
+            db_article.save()
+        return redirect("news:article", article_id=db_article.id)
     articles = News.objects.order_by("-created_at")
     form = ArticleForm()
     context = {"articles": articles, "form": form}
@@ -40,5 +47,27 @@ class ArticleEdit(View):
         article = get_object_or_404(News, pk=article_id)
         form = ArticleForm(request.POST, instance=article)
         if form.is_valid():
-            form.save()
+            db_article = form.save(commit=False)
+            db_article.author = request.user
+            db_article.save()
             return redirect("news:article", article_id=article.id)
+
+def sign_up(request):
+   if request.method == 'POST':
+       form = SignUpForm(request.POST)
+       if form.is_valid():
+           user = form.save()
+           group = Group.objects.get(name="default")
+           group.user_set.add(user) 
+           login(request, user)
+           return redirect('news:index')
+   else:
+       form = SignUpForm()
+   return render(request, 'registration/sign-up.html', {"form": form})
+
+def delete_news(request, article_id):
+    article = get_object_or_404(News, pk=article_id)
+    if request.POST:
+        if request.user == article.author or request.user.has_perm("news.delete_news"):
+            article.delete()
+    return redirect('news:index')
